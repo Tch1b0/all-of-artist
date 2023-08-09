@@ -20,9 +20,10 @@ SCOPES = ["playlist-modify-private", "playlist-read-private"]
 auth_manager = SpotifyOAuth(
     CLIENT_ID, CLIENT_SECRET, username=USERNAME, redirect_uri="http://localhost:8080", scope=" ".join(SCOPES))
 sp = spotipy.Spotify(auth_manager=auth_manager)
+me = sp.me()
 
 playlist: dict | None = None
-playlists = sp.user_playlists(sp.me()["id"])["items"]
+playlists = sp.user_playlists(me["id"])["items"]
 
 for p in playlists:
     if p["name"] == PLAYLIST_NAME:
@@ -37,7 +38,7 @@ for p in playlists:
 
 if playlist is None:
     artist_name = sp.artist(ARTIST_ID)["name"]
-    playlist = sp.user_playlist_create(sp.me()["id"], PLAYLIST_NAME,
+    playlist = sp.user_playlist_create(me["id"], PLAYLIST_NAME,
                                        public=False, collaborative=False, description=f"All songs made by {artist_name} (auto generated)")
 
 tracks = Collection()
