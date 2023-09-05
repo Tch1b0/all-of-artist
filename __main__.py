@@ -7,6 +7,8 @@ from cli import CLI
 
 cli = CLI(sys.argv[1:])
 
+load_env(cli.env_path)
+
 PLAYLIST_NAME = get_env("PLAYLIST_NAME")
 ARTIST_ID = get_env("ARTIST_ID")
 

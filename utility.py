@@ -4,7 +4,9 @@ from typing import TypeVar, Callable
 from dotenv import load_dotenv
 from spotipy import Spotify
 
-load_dotenv()
+
+def load_env(path: str | None = None) -> None:
+    load_dotenv(dotenv_path=path)
 
 
 def get_env(key: str):
@@ -49,16 +51,17 @@ class Ruleset:
     excluded_albums: list[str]
 
     def __init__(self, excluded_tracks: list[str], excluded_track_substr: list[str], excluded_albums: list[str]) -> None:
-        self.excluded_tracks = excluded_tracks
-        self.excluded_track_substr = excluded_track_substr
-        self.excluded_albums = excluded_albums
+        self.excluded_tracks = [x for x in excluded_tracks if x != ""]
+        self.excluded_track_substr = [
+            x for x in excluded_track_substr if x != ""]
+        self.excluded_albums = [x for x in excluded_albums if x != ""]
 
     def validated_tracks(self, tracks: list[dict], col: Collection):
         new_tracks = []
         for track in tracks:
             name = track["name"]
             contains_excluded_substr = any(
-                x in name for x in self.excluded_track_substr)
+                x in name for x in self.excluded_track_substr) if len(self.excluded_tracks) > 0 else False
             if name not in self.excluded_tracks and not contains_excluded_substr and not any(t["name"].lower() == name.lower() for t in col.all):
                 new_tracks.append(track)
         return new_tracks
