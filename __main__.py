@@ -61,7 +61,7 @@ for album_raw in albums:
     album = sp.album(album_raw["id"])
     if not r.is_album_valid(album):
         continue
-    for track in r.validated_tracks(album["tracks"]["items"], tracks):
+    for track in r.validated_tracks(ARTIST_ID, album["tracks"]["items"], tracks):
         tracks.append(track)
     try:
         tracks.flush()

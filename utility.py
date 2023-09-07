@@ -56,13 +56,20 @@ class Ruleset:
             x for x in excluded_track_substr if x != ""]
         self.excluded_albums = [x for x in excluded_albums if x != ""]
 
-    def validated_tracks(self, tracks: list[dict], col: Collection):
+    def __is_artist_in_track(self, artist_id: str, track: dict) -> bool:
+        return any(a["id"] == artist_id for a in track["artists"])
+
+    def validated_tracks(self, artist_id: str, tracks: list[dict], col: Collection):
         new_tracks = []
         for track in tracks:
             name = track["name"]
+            is_in_track = self.__is_artist_in_track(artist_id, track)
             contains_excluded_substr = any(
                 x in name for x in self.excluded_track_substr) if len(self.excluded_tracks) > 0 else False
-            if name not in self.excluded_tracks and not contains_excluded_substr and not any(t["name"].lower() == name.lower() for t in col.all):
+            if (is_in_track and 
+                name not in self.excluded_tracks and 
+                not contains_excluded_substr and 
+                not any(t["name"].lower() == name.lower() for t in col.all)):
                 new_tracks.append(track)
         return new_tracks
 
